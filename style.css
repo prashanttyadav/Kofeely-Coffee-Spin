@@ -1,0 +1,464 @@
+/* ===== Kofeely Lucky Wheel – Global Styles ===== */
+
+/* --- Brand Colours --- */
+:root {
+  --brown-dark:   #3E2723;
+  --brown-mid:    #5D4037;
+  --brown-warm:   #8D6E63;
+  --brown-light:  #C8956D;
+  --caramel:      #D4A574;
+  --cream:        #FFF8F0;
+  --white:        #FFFFFF;
+  --error:        #C62828;
+  --success:      #2E7D32;
+  --shadow:       rgba(62,39,35,0.12);
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--brown-dark);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* --- Page Container --- */
+.page {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  padding: 24px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Logo --- */
+.logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--caramel);
+  box-shadow: 0 2px 8px var(--shadow);
+  margin-bottom: 12px;
+}
+
+/* --- Typography --- */
+.brand-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--brown-dark);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: var(--brown-warm);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* --- Forms --- */
+.form-group {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brown-mid);
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: 2px solid var(--caramel);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--brown-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--brown-mid);
+}
+
+/* --- Buttons --- */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  text-align: center;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--brown-mid);
+  color: var(--white);
+}
+.btn-primary:hover { background: var(--brown-dark); }
+
+.btn-secondary {
+  background: var(--caramel);
+  color: var(--brown-dark);
+}
+.btn-secondary:hover { background: var(--brown-light); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--brown-mid);
+  border: 2px solid var(--caramel);
+}
+.btn-outline:hover { background: var(--caramel); color: var(--white); }
+
+/* --- Links --- */
+.link {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: var(--brown-warm);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link:hover { color: var(--brown-mid); }
+
+/* --- Messages --- */
+.msg-error {
+  color: var(--error);
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.msg-success {
+  color: var(--success);
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+/* --- Admin Header --- */
+.admin-header {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  background: var(--caramel);
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+
+/* --- Admin Menu Buttons --- */
+.menu-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+/* --- Back / Logout links --- */
+.top-links {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.top-links a {
+  font-size: 0.85rem;
+  color: var(--brown-warm);
+  text-decoration: none;
+}
+.top-links a:hover { text-decoration: underline; }
+
+/* ===== WHEEL PAGE ===== */
+
+.wheel-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.wheel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+  width: min(88vw, 330px);
+  aspect-ratio: 1;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 2px solid var(--caramel);
+  border-radius: 12px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--brown-warm);
+  position: relative;
+  overflow: hidden;
+  perspective: 600px;
+  user-select: none;
+}
+
+.cell-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.cell.revealed .cell-inner {
+  transform: rotateY(180deg);
+}
+
+.cell-front, .cell-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cell-back {
+  transform: rotateY(180deg);
+  background: var(--caramel);
+  border-radius: 10px;
+  padding: 4px;
+  text-align: center;
+}
+
+.cell-back .offer-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--brown-dark);
+  line-height: 1.1;
+}
+
+.cell-back .claimed-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--brown-mid);
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-top: 3px;
+}
+
+/* --- Center (wheel) cell --- */
+.center-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  overflow: visible;
+}
+
+.wheel-rotor {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+.wheel-disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--caramel), var(--brown-warm));
+  border: 3px solid var(--brown-mid);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+/* Arrow pointing outward from centre, starts at top (N) */
+.arrow-wrap {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25));
+}
+
+.arrow-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Spin button – sits on top of rotor, stays upright */
+.spin-btn {
+  position: relative;
+  z-index: 2;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--brown-mid);
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 3px solid var(--caramel);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.spin-btn:hover { background: var(--brown-dark); }
+.spin-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Result area below wheel */
+.result-area {
+  margin-top: 20px;
+  text-align: center;
+  min-height: 60px;
+}
+
+.result-sentence {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  margin-bottom: 8px;
+}
+
+.result-offer {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brown-dark);
+  margin-bottom: 14px;
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  color: var(--brown-warm);
+  margin-top: 10px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ===== OFFERS PAGE (Page 7) ===== */
+
+.offers-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.offer-card {
+  background: var(--white);
+  border: 2px solid var(--caramel);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.offer-card h3 {
+  font-size: 0.95rem;
+  color: var(--brown-mid);
+  margin-bottom: 10px;
+}
+
+.offer-card .form-group {
+  margin-bottom: 10px;
+}
+
+.offer-card .form-group input {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.freq-total {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 14px 0 6px;
+  padding: 10px;
+  border-radius: 10px;
+}
+.freq-total.valid   { color: var(--success); background: #E8F5E9; }
+.freq-total.invalid { color: var(--error);   background: #FFEBEE; }
+
+/* ===== Responsive ===== */
+
+@media (min-width: 480px) {
+  .logo { width: 100px; height: 100px; }
+  .page-title { font-size: 1.7rem; }
+  .wheel-grid { width: 360px; }
+}
+
+@media (min-width: 768px) {
+  .page { padding: 32px 24px 48px; }
+  .wheel-grid { gap: 10px; }
+}
+
+/* Prevent horizontal scroll */
+html, body { max-width: 100vw; overflow-x: hidden; }
