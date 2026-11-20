@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Change Spin PIN</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="admin-header">
+      <span class="admin-badge">Admin</span>
+      <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+      <h2 class="brand-name">Kofeely Coffee</h2>
+    </div>
+
+    <div class="top-links">
+      <a href="/admin">← Back</a>
+      <span></span>
+    </div>
+
+    <h1 class="page-title" style="font-size:1.2rem;">Change Spin PIN</h1>
+
+    <form id="pinForm" autocomplete="off" style="width:100%;">
+      <div class="form-group">
+        <label for="adminPass">Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter admin password" required>
+      </div>
+      <div class="form-group">
+        <label for="newPin">New Spin PIN</label>
+        <input type="text" id="newPin" inputmode="numeric" pattern="[0-9]*"
+               placeholder="4–8 digits" minlength="4" maxlength="8" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+
+    <div id="errorMsg" class="msg-error"></div>
+    <div id="successMsg" class="msg-success"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('pinForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      const admin_password = document.getElementById('adminPass').value;
+      const new_pin = document.getElementById('newPin').value.trim();
+
+      if (!admin_password || !new_pin) return;
+
+      try {
+        const res = await fetch('/api/admin/pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ admin_password, new_pin })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error;
+          return;
+        }
+
+        successMsg.textContent = data.message;
+        form.reset();
+      } catch (err) {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
