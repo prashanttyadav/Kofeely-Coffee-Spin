@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Lucky Wheel</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+    <h1 class="page-title">Check your luck!</h1>
+    <p class="note">Ask the cart owner for the spin PIN.</p>
+
+    <form id="pinForm" autocomplete="off" style="width:100%;">
+      <div class="form-group">
+        <label for="pinInput">Spin PIN</label>
+        <input type="text" id="pinInput" inputmode="numeric" pattern="[0-9]*"
+               placeholder="Enter PIN" maxlength="8" required autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <div id="errorMsg" class="msg-error"></div>
+
+    <a href="/admin/login" class="link">Admin Login</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('pinForm');
+    const pinInput = document.getElementById('pinInput');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      const pin = pinInput.value.trim();
+      if (!pin) return;
+
+      try {
+        const res = await fetch('/api/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error;
+          return;
+        }
+
+        // Check if we already have a result for this round
+        const saved = JSON.parse(localStorage.getItem('kofeely_result') || 'null');
+        if (saved && saved.round === data.round) {
+          // Already spun this round – show saved result
+          localStorage.setItem('kofeely_token', data.token);
+          window.location.href = '/wheel';
+          return;
+        }
+
+        // Save token and round, go to wheel
+        localStorage.setItem('kofeely_token', data.token);
+        localStorage.setItem('kofeely_round', String(data.round));
+        // Clear any stale result from a different round
+        localStorage.removeItem('kofeely_result');
+        window.location.href = '/wheel';
+      } catch (err) {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
