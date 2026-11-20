@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Lucky Wheel!</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+    <h2 class="brand-name">Kofeely Coffee</h2>
+    <h1 class="page-title">Lucky Wheel!</h1>
+
+    <div class="wheel-section">
+      <!-- 3×3 Grid: positions mapped NW=7, N=0, NE=1, W=6, center, E=2, SW=5, S=4, SE=3 -->
+      <div class="wheel-grid" id="wheelGrid">
+        <!-- Row 1 -->
+        <div class="cell" data-pos="7">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+        <div class="cell" data-pos="0">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+        <div class="cell" data-pos="1">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="cell" data-pos="6">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center: Wheel -->
+        <div class="center-cell">
+          <div class="wheel-rotor" id="rotor">
+            <div class="wheel-disc"></div>
+            <div class="arrow-wrap">
+              <svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 0 C12 0 22 18 20 22 Q18 27 12 27 Q6 27 4 22 C2 18 12 0 12 0Z"
+                      fill="#D4A574" stroke="#5D4037" stroke-width="1.5"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <button class="spin-btn" id="spinBtn">Spin</button>
+        </div>
+
+        <div class="cell" data-pos="2">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="cell" data-pos="5">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+        <div class="cell" data-pos="4">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+        <div class="cell" data-pos="3">
+          <div class="cell-inner">
+            <div class="cell-front">?</div>
+            <div class="cell-back">
+              <span class="offer-text"></span>
+              <span class="claimed-label">Claimed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <p class="result-sentence" id="resultSentence"></p>
+      <p class="result-offer" id="resultOffer"></p>
+    </div>
+
+    <p class="footer-text" id="footerText" style="display:none;">Show this offer to the cashier at the checkout.</p>
+  </div>
+
+  <script>
+    const spinBtn     = document.getElementById('spinBtn');
+    const rotor       = document.getElementById('rotor');
+    const resultSentence = document.getElementById('resultSentence');
+    const resultOffer = document.getElementById('resultOffer');
+    const footerText  = document.getElementById('footerText');
+    const cells       = document.querySelectorAll('.cell');
+
+    let hasSpun = false;
+    let spinning = false;
+
+    // --- On load: check for saved result or valid token ---
+    (async function init() {
+      const token = localStorage.getItem('kofeely_token');
+      const saved = JSON.parse(localStorage.getItem('kofeely_result') || 'null');
+
+      // Get current round from server
+      let currentRound;
+      try {
+        const rr = await fetch('/api/round');
+        const rd = await rr.json();
+        currentRound = rd.round;
+      } catch {
+        window.location.href = '/';
+        return;
+      }
+
+      // If we have a saved result for this round, display it
+      if (saved && saved.round === currentRound) {
+        showResult(saved, true);
+        return;
+      }
+
+      // Clear stale result
+      localStorage.removeItem('kofeely_result');
+
+      // Need a valid token to spin
+      if (!token) {
+        window.location.href = '/';
+        return;
+      }
+    })();
+
+    // --- Spin button ---
+    spinBtn.addEventListener('click', async () => {
+      if (hasSpun) {
+        window.location.href = '/';
+        return;
+      }
+      if (spinning) return;
+      spinning = true;
+      spinBtn.disabled = true;
+
+      const token = localStorage.getItem('kofeely_token');
+      if (!token) {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/spin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        if (!res.ok) {
+          window.location.href = '/';
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data.already_used) {
+          // Show the saved result
+          localStorage.setItem('kofeely_result', JSON.stringify(data));
+          showResult(data, true);
+          return;
+        }
+
+        // Save result
+        localStorage.setItem('kofeely_result', JSON.stringify(data));
+        // Clear the token so it can't be reused
+        localStorage.removeItem('kofeely_token');
+
+        // Animate the wheel
+        animateSpin(data);
+      } catch (err) {
+        window.location.href = '/';
+      }
+    });
+
+    function animateSpin(data) {
+      const targetAngle = data.position * 45;
+      // 5–8 full turns + target angle
+      const fullTurns = 5 + Math.floor(Math.random() * 4);
+      const totalDeg = fullTurns * 360 + targetAngle;
+
+      rotor.style.transform = `rotate(${totalDeg}deg)`;
+
+      // After animation completes (~5s transition)
+      setTimeout(() => {
+        showResult(data, false);
+      }, 5200);
+    }
+
+    function showResult(data, instant) {
+      hasSpun = true;
+      spinning = false;
+      spinBtn.disabled = false; // Re-enable so second tap redirects
+
+      if (instant) {
+        // Set rotor to final angle instantly
+        rotor.style.transition = 'none';
+        const angle = data.position * 45;
+        rotor.style.transform = `rotate(${angle}deg)`;
+      }
+
+      // Flip the target cell
+      const targetCell = document.querySelector(`.cell[data-pos="${data.position}"]`);
+      if (targetCell) {
+        targetCell.querySelector('.offer-text').textContent = data.offer_text;
+        targetCell.classList.add('revealed');
+      }
+
+      // Show sentence and offer below the wheel
+      resultSentence.textContent = data.sentence;
+      resultOffer.textContent = data.offer_text;
+      footerText.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
