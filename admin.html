@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="admin-header">
+      <span class="admin-badge">Admin</span>
+      <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+      <h2 class="brand-name">Kofeely Coffee</h2>
+    </div>
+
+    <div class="menu-stack">
+      <a href="/admin/pin" class="btn btn-primary">Change Spin PIN</a>
+      <a href="/admin/password" class="btn btn-primary">Change Admin Password</a>
+      <a href="/admin/offers" class="btn btn-primary">Update Offers</a>
+    </div>
+
+    <a href="#" id="logoutLink" class="link">Log out</a>
+  </div>
+
+  <script>
+    document.getElementById('logoutLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/admin/logout', { method: 'POST' });
+      window.location.href = '/admin/login';
+    });
+  </script>
+</body>
+</html>
