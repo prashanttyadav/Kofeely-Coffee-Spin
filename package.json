@@ -1,0 +1,31 @@
+{
+  "name": "kofeely-lucky-wheel",
+  "version": "1.0.0",
+  "description": "Lucky Wheel spin-to-win app for Kofeely Coffee cart",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "qr": "node make_qr.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit --detectOpenHandles",
+    "test:api": "node --experimental-vm-modules node_modules/.bin/jest tests/api.test.js --forceExit --detectOpenHandles",
+    "test:draw": "node --experimental-vm-modules node_modules/.bin/jest tests/draw.test.js --forceExit --detectOpenHandles",
+    "test:e2e": "npx playwright test"
+  },
+  "keywords": ["coffee", "lucky-wheel", "discount", "spin"],
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0",
+    "express-session": "^1.18.1",
+    "uuid": "^10.0.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "@playwright/test": "^1.49.0"
+  }
+}
