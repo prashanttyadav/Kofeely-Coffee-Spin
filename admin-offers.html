@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Update Offers</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="admin-header">
+      <span class="admin-badge">Admin</span>
+      <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+      <h2 class="brand-name">Kofeely Coffee</h2>
+    </div>
+
+    <div class="top-links">
+      <a href="/admin">← Back</a>
+      <span></span>
+    </div>
+
+    <h1 class="page-title" style="font-size:1.2rem;">Update Offers</h1>
+
+    <div class="offers-list" id="offersList"></div>
+
+    <div class="freq-total" id="freqTotal">Total: 0 / 100</div>
+
+    <button class="btn btn-primary" id="saveBtn" style="margin-top:10px;">Change</button>
+
+    <div id="errorMsg" class="msg-error"></div>
+    <div id="successMsg" class="msg-success"></div>
+  </div>
+
+  <script>
+    const offersList = document.getElementById('offersList');
+    const freqTotal  = document.getElementById('freqTotal');
+    const saveBtn    = document.getElementById('saveBtn');
+    const errorMsg   = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    let offers = [];
+
+    // Load current offers
+    async function loadOffers() {
+      try {
+        const res = await fetch('/api/admin/offers');
+        if (!res.ok) { window.location.href = '/admin/login'; return; }
+        const data = await res.json();
+        offers = data.offers;
+        renderOffers();
+      } catch {
+        errorMsg.textContent = 'Failed to load offers.';
+      }
+    }
+
+    function renderOffers() {
+      offersList.innerHTML = '';
+      offers.forEach((o, i) => {
+        const card = document.createElement('div');
+        card.className = 'offer-card';
+        card.innerHTML = `
+          <h3>Offer #${i + 1}</h3>
+          <div class="form-group">
+            <label>Offer text (1–24 chars)</label>
+            <input type="text" data-idx="${i}" data-field="offer_text"
+                   value="${escHtml(o.offer_text)}" maxlength="24" required>
+          </div>
+          <div class="form-group">
+            <label>Frequency per 100 spins</label>
+            <input type="number" data-idx="${i}" data-field="frequency"
+                   value="${o.frequency}" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label>Sentence (1–80 chars)</label>
+            <input type="text" data-idx="${i}" data-field="sentence"
+                   value="${escHtml(o.sentence)}" maxlength="80" required>
+          </div>
+        `;
+        offersList.appendChild(card);
+      });
+
+      // Listen for input changes
+      offersList.querySelectorAll('input').forEach(inp => {
+        inp.addEventListener('input', onInput);
+      });
+      updateTotal();
+    }
+
+    function onInput(e) {
+      const idx = parseInt(e.target.dataset.idx, 10);
+      const field = e.target.dataset.field;
+      if (field === 'frequency') {
+        offers[idx][field] = parseInt(e.target.value, 10) || 0;
+      } else {
+        offers[idx][field] = e.target.value;
+      }
+      updateTotal();
+    }
+
+    function updateTotal() {
+      const total = offers.reduce((s, o) => s + (parseInt(o.frequency, 10) || 0), 0);
+      freqTotal.textContent = `Total: ${total} / 100`;
+      if (total === 100) {
+        freqTotal.className = 'freq-total valid';
+        saveBtn.disabled = false;
+      } else {
+        freqTotal.className = 'freq-total invalid';
+        saveBtn.disabled = true;
+      }
+    }
+
+    saveBtn.addEventListener('click', async () => {
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      // Read values from DOM to be safe
+      const payload = offers.map((o, i) => ({
+        offer_text: o.offer_text,
+        frequency: parseInt(o.frequency, 10) || 0,
+        sentence: o.sentence
+      }));
+
+      const total = payload.reduce((s, o) => s + o.frequency, 0);
+      if (total !== 100) {
+        errorMsg.textContent = `Frequencies must add up to 100 (now ${total})`;
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/offers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offers: payload })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error;
+          return;
+        }
+
+        successMsg.textContent = data.message;
+      } catch {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+
+    function escHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML.replace(/"/g, '&quot;');
+    }
+
+    loadOffers();
+  </script>
+</body>
+</html>
