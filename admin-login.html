@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kofeely Coffee – Admin Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page">
+    <img src="/assets/logo.png" alt="Kofeely Coffee" class="logo">
+    <h2 class="brand-name">Kofeely Coffee</h2>
+
+    <form id="loginForm" autocomplete="off" style="width:100%; margin-top: 20px;">
+      <div class="form-group">
+        <label for="passwordInput">Admin Password</label>
+        <input type="password" id="passwordInput" placeholder="Enter admin password"
+               required autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+    <div id="errorMsg" class="msg-error"></div>
+
+    <a href="/" class="link">← Back to Home</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('passwordInput');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      const password = passwordInput.value;
+      if (!password) return;
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error;
+          return;
+        }
+
+        window.location.href = '/admin';
+      } catch (err) {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
